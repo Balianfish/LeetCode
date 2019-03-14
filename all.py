@@ -343,6 +343,27 @@ class Solution(object):
             else:
                 return nums[low]
 
+# 199 Binary Tree Right Side View
+# time 56%
+    def rightSideView(self, root: TreeNode) -> List[int]:
+        if root == None:
+            return []
+        rightview = []
+        thislayer = [root]
+        while(len(thislayer)):
+            rightview.append(thislayer[-1].val)
+            layer_len = len(thislayer)
+            for i in range(layer_len):
+                layer_size = len(thislayer)
+                if thislayer[i].left:
+                    thislayer.append(thislayer[i].left)
+                if thislayer[i].right:
+                    thislayer.append(thislayer[i].right)
+                
+            for i in range(layer_len):
+                thislayer.pop(0)
+        return rightview
+
 # 268 Missing Number
     def missingNumber(self, nums):
         """
@@ -441,6 +462,68 @@ class Solution(object):
         return count
 
 # 410. Split Array Largest Sum
+# time 60%
+    def splitArray(self, nums: List[int], m: int) -> int:
+        # range of the return value
+        min_sum = max(nums)
+        max_sum = max(sum(nums), min_sum)
+        
+        while min_sum < max_sum:
+            mid = min_sum + (max_sum - min_sum)//2
+            if self.checkValid(nums, mid, m):
+                max_sum = mid
+            else:
+                min_sum = mid + 1
+        return min_sum
+        
+    def checkValid(self, nums, mid, m):
+        count = 0
+        curr = 0
+        for i in nums:
+            curr += i
+            if curr > mid:
+                count += 1
+                if count >= m:
+                    return False
+                curr = i
+        return True
+
+# 513. Find Bottom Left Tree Value
+# time 80%
+    def findBottomLeftValue(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        layer = [root]
+        while(len(layer)):
+            thislayer = []
+            for i in layer:
+                if i.left:
+                    thislayer.append(i.left)
+                if i.right:
+                    thislayer.append(i.right)
+            if thislayer:
+                layer = thislayer
+            else:
+                return layer[0].val
+
+# 559. Maximum Depth of N-ary Tree
+# time 38%
+    def maxDepth(self, root: 'Node') -> int:
+        if root == None:
+            return 0
+        layer = [root]
+        max_depth = 0
+        while(len(layer)):
+            max_depth += 1
+            layer_size = len(layer)
+            for i in range(layer_size):
+                for j in range(len(layer[i].children)):
+                    layer.append(layer[i].children[j])
+            for i in range(layer_size):
+                layer.pop(0)
+        return max_depth
 
 # 744. Find Smallest Letter Greater Than Target
     def nextGreatestLetter(self, letters: List[str], target: str) -> str:
