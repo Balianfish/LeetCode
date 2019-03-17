@@ -269,6 +269,19 @@ class Solution(object):
                     low = mid + 1
             mid = (low + high)//2
         return mid
+# 78 subset
+# 79% time 
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        results = []
+        results.append([])
+        for i in range(len(nums)):
+            curr_n = len(results)
+            for j in range(curr_n):
+                tmp = results[j].copy()
+                tmp.append(nums[i])
+                results.append(tmp)
+        return results
+
 # 81 Search in Rotated Sorted Array II
 # time 54% space 6%
     def search(self, nums: List[int], target: int) -> bool: 
@@ -299,6 +312,38 @@ class Solution(object):
                 else:
                     low = low + 1
         return False
+
+# 103. Binary Tree Zigzag Level Order Traversal
+# time 62%
+    def zigzagLevelOrder(self, root: TreeNode) -> List[List[int]]:
+        if root == None:
+            return []
+        layer = [root]
+        res = []
+        left = 1
+        while len(layer):
+            
+            res_layer = []
+            if left:
+                for i in layer:
+                    res_layer.append(i.val)
+                res.append(res_layer)
+                left = 0
+            else:
+                for i in layer[::-1]:
+                    res_layer.append(i.val)
+                res.append(res_layer)
+                left = 1
+            thislayer = []
+            for i in layer:
+                if i.left:
+                    thislayer.append(i.left)
+                if i.right:
+                    thislayer.append(i.right)
+            layer = thislayer
+        return res
+                
+
 # 112 Path Sum        
     def hasPathSum(self, root, sum):
         """
@@ -524,6 +569,26 @@ class Solution(object):
             for i in range(layer_size):
                 layer.pop(0)
         return max_depth
+
+# 690. Employee Importance
+# time 74%
+    def getImportance(self, employees, id):
+        """
+        :type employees: Employee
+        :type id: int
+        :rtype: int
+        """
+        id_dict = {i.id: i for i in employees}
+        layer = [id_dict[id]]
+        total_importance = 0
+        while layer:
+            thislayer = []
+            for i in layer:
+                total_importance += i.importance
+                for j in i.subordinates:
+                    thislayer.append(id_dict[j])
+            layer = thislayer
+        return total_importance
 
 # 744. Find Smallest Letter Greater Than Target
     def nextGreatestLetter(self, letters: List[str], target: str) -> str:
