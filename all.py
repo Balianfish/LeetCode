@@ -269,6 +269,85 @@ class Solution(object):
                     low = mid + 1
             mid = (low + high)//2
         return mid
+# 62. Unique Paths:
+# 76%
+    def uniquePaths(self, m: int, n: int) -> int:
+        if m <= 1 or n <= 1:
+            return 1
+        layer = [1]*m
+        for j in range(n - 1):
+            for i in range(1, len(layer)):
+                layer[i] = layer[i - 1] + layer[i]
+        return layer[-1]
+
+# 63. Unique Paths II:
+# 64%
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        if len(obstacleGrid) == 0:
+            return 0
+        else:
+            m = len(obstacleGrid)
+            if len(obstacleGrid[0]) == 0:
+                return 0
+            else:
+                n = len(obstacleGrid[0])
+        if m <= 1 or n <= 1:
+            if m == 1:
+                for i in range(n):
+                    if obstacleGrid[0][i] == 1:
+                        return 0
+            if n == 1:
+                for i in range(m):
+                    if obstacleGrid[i][0] == 1:
+                        return 0
+            return 1
+        
+        
+        no_ob = -1
+        for i in range(m):
+            if obstacleGrid[i][0] == 0:
+                obstacleGrid[i][0] = no_ob
+            else:
+                obstacleGrid[i][0] = 0
+                no_ob = 0
+                if i == 0:
+                    return 0
+        
+        no_ob = -1
+        for i in range(1, n):
+            if obstacleGrid[0][i] == 0:
+                obstacleGrid[0][i] = no_ob
+            else:
+                obstacleGrid[0][i] = 0
+                no_ob = 0
+                
+        print(obstacleGrid)
+        
+        for i in range(1, m):
+            for j in range(1, n):
+                if obstacleGrid[i][j] == 1:
+                    obstacleGrid[i][j] = 0
+                else:
+                    obstacleGrid[i][j] = obstacleGrid[i-1][j] + obstacleGrid[i][j - 1]
+        
+        return -obstacleGrid[m-1][n-1]
+
+# 69. Sqrt(x)
+# 44%
+    def mySqrt(self, x: int) -> int:
+        if x == 0:
+            return 0
+        left = 1
+        right = sys.maxsize
+        while True:
+            mid = left + (right - left)//2
+            if mid > x/mid:
+                right = mid - 1
+            else:
+                if mid + 1 > x/(mid + 1):
+                    return mid
+                left = mid + 1
+
 # 78 subset
 # 79% time 
     def subsets(self, nums: List[int]) -> List[List[int]]:
@@ -313,6 +392,112 @@ class Solution(object):
                     low = low + 1
         return False
 
+# 98. Validate Binary Search Tree
+# 55%
+    def isValidBST(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if root == None:
+            return True
+        # in order traversal
+        stack = []
+        res = []
+        while stack or root:
+            
+            while root:
+                stack.append(root)
+                root = root.left
+                
+            root = stack.pop()
+            res.append(root.val)
+            
+            root = root.right
+            
+        print(res)
+        for i in range(1, len(res)):
+            if res[i] <= res[i - 1]:
+                return False
+        return True
+
+# 101. Symmetric Tree
+# time 68%
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        return self.isMirror(root, root)
+        
+    def isMirror(self, t1, t2):
+        if t1 == None and t2 == None:
+            return True
+        if t1 == None or t2 == None:
+            return False
+        return t1.val == t2.val and self.isMirror(t1.left, t2.right) and self.isMirror(t1.right, t2.left)
+
+# BFS
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if root == None or (root.left == None and root.right == None):
+            return True
+        layer = []
+        if root.left and root.right:
+            layer = [root.left, root.right]
+        else:
+            return False
+        
+        while layer:
+            l = layer.pop(0)
+            r = layer.pop(0)
+            
+            if l.val != r.val:
+                return False
+            
+            if l.left and r.right:
+                layer.append(l.left)
+                layer.append(r.right)
+            elif l.left or r.right:
+                return False
+            
+            if l.right and r.left:
+                layer.append(l.right)
+                layer.append(r.left)
+            elif l.right or r.left:
+                return False
+        return True
+# DFS
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if root == None:
+            return True
+        sl = [root]
+        sr = [root]
+        lp = root.left
+        rp = root.right
+        
+        while(lp or sl or rp or lp):
+            if not lp and rp or rp and not lp:
+                return False
+            if lp and rp:
+                if lp.val != rp.val:
+                    return False
+                sl.append(lp)
+                sr.append(rp)
+                lp = lp.left
+                rp = rp.right
+            else:
+                lp = sl.pop().right
+                rp = sr.pop().left
+        return True
+
 # 103. Binary Tree Zigzag Level Order Traversal
 # time 62%
     def zigzagLevelOrder(self, root: TreeNode) -> List[List[int]]:
@@ -342,7 +527,27 @@ class Solution(object):
                     thislayer.append(i.right)
             layer = thislayer
         return res
-                
+
+# 105. Construct Binary Tree from Preorder and Inorder Traversal
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        if len(preorder) == 0:
+            return None
+        
+        inorder_dict = dict(zip(inorder, range(len(inorder))))
+        curr = 0
+        def helperFunc(inorder_left, inorder_right):
+            if inorder_left > inorder_right:
+                return None
+            root_val = preorder[curr]
+            root = TreeNode(root_val)
+            inorder_curr = inorder_dict[root_val]
+            preorder.pop(0)
+            root.left = helperFunc(inorder_left, inorder_curr - 1)
+            root.right = helperFunc(inorder_curr + 1, inorder_right)
+            return root
+        return helperFunc(0, len(inorder) - 1)
+
+               
 
 # 112 Path Sum        
     def hasPathSum(self, root, sum):
@@ -357,6 +562,29 @@ class Solution(object):
             return True
         else:
             return Solution.hasPathSum(self, root.left, sum - root.val) or Solution.hasPathSum(self, root.right, sum - root.val)
+
+# 113. Path Sum II
+# time 57%
+    def pathSum(self, root: TreeNode, sum: int) -> List[List[int]]:
+        
+        if root == None: 
+            return []
+        
+        res = []
+        def dfs(node, val, node_list):
+            if node.left == None and node.right == None and node.val + val == sum:
+                node_list.append(node.val)
+                res.append(node_list)
+                node_list = []
+            if node.left or node.right:
+                node_list.append(node.val)
+                if node.left:
+                    dfs(node.left, val + node.val, node_list.copy())
+                if node.right:
+                    dfs(node.right, val + node.val, node_list.copy())
+        dfs(root, 0, [])
+        return res
+                
 
 # 153. Find Minimum in Rotated Sorted Array
 # time 49% space 5%
@@ -408,6 +636,30 @@ class Solution(object):
             for i in range(layer_len):
                 thislayer.pop(0)
         return rightview
+
+# 207 Course Schedule
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        pre = [[] for i in range(numCourses)]
+        visit = [0]*numCourses
+        for i in prerequisites:
+            pre[i[0]].append(i[1])
+        
+        def dfs(i):
+            if visit[i] == -1:
+                return False
+            if visit[i] == 1:
+                return True
+            visit[i] = -1
+            for j in pre[i]:
+                if not dfs(j):
+                    return False
+            visit[i] = 1
+            return True
+        
+        for i in range(numCourses):
+            if not dfs(i):
+                return False
+        return True
 
 # 268 Missing Number
     def missingNumber(self, nums):
@@ -602,3 +854,28 @@ class Solution(object):
                 low = mid + 1
             mid = low + (high - low)//2           
         return letters[high] if letters[high] > target else letters[0]
+
+# 980. 
+
+# 988. Smallest String Starting From Leaf
+    def smallestFromLeaf(self, root: TreeNode) -> str:
+
+        def val_to_letter(n):
+            return chr(n + ord('a'))
+
+        all_str = []
+
+        def dfs(node, strlist):
+            if node == None:
+                return
+            if node.left == node.right == None:
+                all_str.append((strlist + val_to_letter(node.val))[::-1])
+                return
+            else:
+                strlist = strlist + val_to_letter(node.val)
+                dfs(node.left, strlist)
+                dfs(node.right, strlist)
+        dfs(root, '')
+
+        return min(all_str)
+
