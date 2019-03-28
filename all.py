@@ -269,6 +269,25 @@ class Solution(object):
                     low = mid + 1
             mid = (low + high)//2
         return mid
+
+# 53. Maximum Subarray
+# 99.85%
+    def maxSubArray(self, nums: List[int]) -> int:
+        
+        max_to_now = 0
+        curr = 0
+        for i in range(len(nums)):
+            if curr + nums[i] > max_to_now:
+                max_to_now = curr + nums[i]
+                curr = max_to_now
+            else:
+                curr = curr + nums[i]
+                if curr < 0:
+                    curr = 0
+        if max_to_now == 0:
+            return max(nums)
+        return max_to_now
+
 # 62. Unique Paths:
 # 76%
     def uniquePaths(self, m: int, n: int) -> int:
@@ -331,6 +350,25 @@ class Solution(object):
                     obstacleGrid[i][j] = obstacleGrid[i-1][j] + obstacleGrid[i][j - 1]
         
         return -obstacleGrid[m-1][n-1]
+# 64. Minimum Path Sum
+# 87%
+    def minPathSum(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        if len(grid) == 0:
+            return 0
+        m, n = len(grid), len(grid[0])
+        for i in range(1, m):
+            grid[i][0] += grid[i - 1][0]
+        for i in range(1, n):
+            grid[0][i] += grid[0][i - 1]
+        for i in range(1, m):
+            for j in range(1, n):
+                grid[i][j] += min(grid[i - 1][j], grid[i][j - 1])
+        return grid[m - 1][n - 1]
+
 
 # 69. Sqrt(x)
 # 44%
@@ -347,6 +385,28 @@ class Solution(object):
                 if mid + 1 > x/(mid + 1):
                     return mid
                 left = mid + 1
+
+# 70. Climbing Stairs
+# 64%
+    def climbStairs(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        
+        if n <= 2:
+            if n == 1:
+                return 1
+            else:
+                return 2
+        else:
+            prev = 1
+            curr = 2
+            n = n - 2
+            while n:
+                prev, curr = curr, prev + curr
+                n = n - 1
+        return curr
 
 # 78 subset
 # 79% time 
@@ -391,6 +451,20 @@ class Solution(object):
                 else:
                     low = low + 1
         return False
+
+# 96. Unique Binary Search Trees
+# 67%
+    def numTrees(self, n: int) -> int:
+        if n <= 1:
+            return 1
+        count_res  = [0]*(n + 1)
+        count_res[0] = count_res[1] = 1
+        
+        
+        for i in range(2, n + 1):
+            for j in range(1, i + 1):
+                count_res[i] += count_res[j - 1]*count_res[i - j]
+        return count_res[n]
 
 # 98. Validate Binary Search Tree
 # 55%
@@ -584,7 +658,21 @@ class Solution(object):
                     dfs(node.right, val + node.val, node_list.copy())
         dfs(root, 0, [])
         return res
-                
+   
+# 121. Best Time to Buy and Sell Stock
+# 99%
+    def maxProfit(self, prices: List[int]) -> int:
+        if len(prices) <= 1:
+            return 0
+        
+        max_profit = 0
+        buy_time = 0
+        for i in range(1, len(prices)):
+            if prices[i] - prices[buy_time] > max_profit:
+                max_profit = prices[i] - prices[buy_time]
+            if prices[i] < prices[buy_time]:
+                buy_time = i
+        return max_profit 
 
 # 153. Find Minimum in Rotated Sorted Array
 # time 49% space 5%
@@ -615,6 +703,21 @@ class Solution(object):
                 mid = low + (high - low)//2
             else:
                 return nums[low]
+
+# 198. House Robber
+# 72%
+    def rob(self, nums: List[int]) -> int:
+        if len(nums) <= 0:
+            return 0 if len(nums) == 0 else nums[0]
+        max_gain = [0]*(len(nums) + 1)
+        last = 0
+        for i in range(1, len(nums) + 1):
+            if last == 0:
+                max_gain[i] = max_gain[i - 1] + nums[i - 1]
+                last = 1
+            else:
+                max_gain[i] = max(max_gain[i - 1], max_gain[i - 2] + nums[i - 1])
+        return max_gain[-1]
 
 # 199 Binary Tree Right Side View
 # time 56%
@@ -660,6 +763,21 @@ class Solution(object):
             if not dfs(i):
                 return False
         return True
+
+# 238. Product of Array Except Self
+    def productExceptSelf(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        res = [1]*len(nums)
+        for i in range(1, len(nums)):
+            res[i] = res[i - 1] * nums[i - 1]
+        right = nums[-1]
+        for i in range(len(nums) - 2, -1, -1):
+            res[i] = right*res[i]
+            right *= nums[i]
+        return res
 
 # 268 Missing Number
     def missingNumber(self, nums):
@@ -710,6 +828,15 @@ class Solution(object):
                 i1 += 1
             i2 += 1
         return
+
+# 344. Reverse String
+# 58%
+    def reverseString(self, s: List[str]) -> None:
+        """
+        Do not return anything, modify s in-place instead.
+        """
+        for i in range(len(s)//2):
+            s[i], s[-1-i] = s[-1- i], s[i]
 
 # 378 Kth Smallest Element in a Sorted Matrix
     def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
@@ -785,6 +912,18 @@ class Solution(object):
                 curr = i
         return True
 
+# 412. Fizz Buzz
+# 58%
+    def fizzBuzz(self, n: int) -> List[str]:
+        res = [str(i + 1) for i in range(n)]
+        for i in range(1, n//3+1):
+            res[i*3-1] = 'Fizz'
+        for i in range(1, n//5+1):
+            res[5*i-1] = 'Buzz'
+        for i in range(1, n//15+1):
+            res[15*i-1] = 'FizzBuzz'
+        return res
+
 # 513. Find Bottom Left Tree Value
 # time 80%
     def findBottomLeftValue(self, root):
@@ -855,7 +994,20 @@ class Solution(object):
             mid = low + (high - low)//2           
         return letters[high] if letters[high] > target else letters[0]
 
-# 980. 
+# 876. Middle of the Linked List
+    def middleNode(self, head: ListNode) -> ListNode:
+        if head == None or head.next == None:
+            return head
+        node1 = head
+        node2 = head
+        while node2.next.next != None:
+            node1, node2 = node1.next, node2.next.next
+            if node2.next == None:
+                break
+        if node2.next == None:
+            return node1
+        return node1.next
+
 
 # 988. Smallest String Starting From Leaf
     def smallestFromLeaf(self, root: TreeNode) -> str:
