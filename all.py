@@ -452,6 +452,37 @@ class Solution(object):
                     low = low + 1
         return False
 
+# 91. Decode Ways
+# 94%
+    def numDecodings(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        if len(s) <= 1:
+            return 0 if len(s) == 0 or len(s) == 1 and s[0] == '0' else 1
+        if s[0] == '0':
+            return 0
+        
+        prev1 = 1
+        prev0 = 1
+        curr = 1
+        
+        for i in range(1, len(s)):
+            curr_string = int(s[i-1:i+1])
+            if curr_string > 26 or curr_string < 10:
+                if s[i] == '0':
+                    return 0
+                else:
+                    curr = prev0
+            else:
+                if s[i] == '0':
+                    curr = prev1
+                else:
+                    curr = prev0 + prev1
+            prev1, prev0 = prev0, curr
+        return curr
+
 # 96. Unique Binary Search Trees
 # 67%
     def numTrees(self, n: int) -> int:
@@ -673,6 +704,68 @@ class Solution(object):
             if prices[i] < prices[buy_time]:
                 buy_time = i
         return max_profit 
+
+# 123. Best Time to Buy and Sell Stock III
+# 85%
+    def maxProfit(self, prices: List[int]) -> int:
+        if len(prices) <= 1:
+            return 0   
+        max_left = [0]*len(prices) # max_left[i]: max profit in prices[:i+1] if can only buy once
+        max_right = [0]*len(prices) # max_right[i]: max profit in prices[i+1:] if can only buy once
+        buy_time = 0
+        max_profit_left = 0
+        
+        sell_time = len(prices) - 1
+        max_profit_right = 0
+        
+        for i in range(1, len(prices)):
+            if prices[i] - prices[buy_time] > max_profit_left:
+                max_profit_left = prices[i] - prices[buy_time]
+            if prices[i] < prices[buy_time]:
+                buy_time = i
+            max_left[i] = max_profit_left
+            
+            if prices[sell_time] - prices[len(prices) - i - 1] > max_profit_right:
+                max_profit_right = prices[sell_time] - prices[len(prices) - i - 1]
+            if prices[sell_time] < prices[len(prices) - i - 1]:
+                sell_time = len(prices) - i - 1
+            max_right[len(prices) - i - 1] = max_profit_right
+
+        max_profit = 0
+        for i in range(len(prices)):
+            if max_right[i] + max_left[i] > max_profit:
+                max_profit = max_right[i] + max_left[i]
+        return max_profit
+
+# 99%
+    def maxProfit(self, prices: List[int]) -> int:
+        if not prices:
+            return 0
+        
+        # if len(prices) == 1:
+        #     return 0        
+        
+# two transactions in total. the first one is followed by the first one. for each transaction, find the min price and update the max profit.         
+                
+        minPrice1, minPrice2 = prices[0], prices[0]
+        maxProfit1, maxProfit2 = 0 , 0
+        
+        for i in prices:
+            if i < minPrice1:
+                minPrice1 = i
+                
+            if i - minPrice1 > maxProfit1:
+                maxProfit1 = i - minPrice1
+# the actual price of second buy is (i - maxProfit1)             
+            if i - maxProfit1 < minPrice2:
+                minPrice2 = i - maxProfit1
+                
+            if i - minPrice2 > maxProfit2:
+                maxProfit2 =  i - minPrice2
+                
+        return maxProfit2
+                
+
 
 # 153. Find Minimum in Rotated Sorted Array
 # time 49% space 5%
