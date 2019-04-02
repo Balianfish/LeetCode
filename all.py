@@ -483,6 +483,28 @@ class Solution(object):
             prev1, prev0 = prev0, curr
         return curr
 
+# 94. Binary Tree Inorder Traversal
+# 79%
+    def inorderTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root == None:
+            return []
+        stack = []
+        res = []
+        curr = root
+        while stack or root:
+            while curr:
+                stack.append(curr)
+                curr = curr.left
+            curr = stack.pop()
+            res.append(curr.val)
+            curr = curr.right
+        return res
+                
+
 # 96. Unique Binary Search Trees
 # 67%
     def numTrees(self, n: int) -> int:
@@ -689,7 +711,35 @@ class Solution(object):
                     dfs(node.right, val + node.val, node_list.copy())
         dfs(root, 0, [])
         return res
-   
+  
+# 118. Pascal's Triangle
+# 72% 
+    def generate(self, numRows):
+        """
+        :type numRows: int
+        :rtype: List[List[int]]
+        """
+        retList = [[0]*i for i in range(1, numRows + 1)]
+        for i in range(numRows):
+            retList[i][0] = retList[i][-1] = 1
+            for j in range(1, i):
+                retList[i][j] = retList[i - 1][j - 1] + retList[i - 1][j]
+        return retList
+
+#120. Triangle
+# 98%
+    def minimumTotal(self, triangle: List[List[int]]) -> int:
+        n = len(triangle)
+        if n <= 1:
+            return 0 if n == 0 else triangle[0][0]
+    
+        path = triangle[-1].copy()
+        for i in range(n - 2, -1, -1):
+            for j in range(0, i + 1):
+                path[j] = triangle[i][j] + min(path[j], path[j + 1])
+        return path[0]
+
+
 # 121. Best Time to Buy and Sell Stock
 # 99%
     def maxProfit(self, prices: List[int]) -> int:
@@ -765,7 +815,21 @@ class Solution(object):
                 
         return maxProfit2
                 
-
+# 144. Binary Tree Preorder Traversal
+# 
+    def preorderTraversal(self, root: TreeNode) -> List[int]:
+        if not root:
+            return []
+        res = []
+        curr = root
+        stack = []
+        while stack or curr:
+            while curr:
+                stack.append(curr)
+                res.append(curr.val)
+                curr = curr.left
+            curr = stack.pop().right
+        return res
 
 # 153. Find Minimum in Rotated Sorted Array
 # time 49% space 5%
@@ -922,6 +986,16 @@ class Solution(object):
             i2 += 1
         return
 
+
+# 326. Power of Three
+# 98%
+    def isPowerOfThree(self, n: int) -> bool:
+        if n < 1:
+            return False
+        while n%3 == 0:
+            n = n/3
+        return n == 1
+
 # 344. Reverse String
 # 58%
     def reverseString(self, s: List[str]) -> None:
@@ -977,6 +1051,27 @@ class Solution(object):
             else:
                 i -= 1
         return count
+
+# 387. First Unique Character in a String
+# 72%
+    def firstUniqChar(self, s: str) -> int:
+        if len(s) <= 0:
+            return -1 if len(s) == 0 else 0
+        dict_check = {}
+        for i in range(len(s)):
+            if s[i] in dict_check:
+                dict_check[s[i]][0] = False
+            else:
+                dict_check[s[i]] = [True, i]
+        min_test = -1 
+        for i in dict_check:
+            if dict_check[i][0]:
+                if min_test == -1:
+                    min_test = dict_check[i][1]
+                else:
+                    if min_test > dict_check[i][1]:
+                        min_test = dict_check[i][1]
+        return min_test
 
 # 410. Split Array Largest Sum
 # time 60%
