@@ -407,6 +407,40 @@ class Solution(object):
                 prev, curr = curr, prev + curr
                 n = n - 1
         return curr
+# 74. Search a 2D Matrix
+# 77%
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        
+        if len(matrix) <= 1:
+            if len(matrix) == 0 or len(matrix[0]) == 0:
+                return False
+        m, n = len(matrix), len(matrix[0])
+        
+        ibegin = 0, 0
+        iend = m - 1, n - 1
+        print(ibegin, iend)
+        if target < matrix[ibegin[0]][ibegin[1]] or target > matrix[iend[0]][iend[1]]:
+            return False
+        
+        while ibegin[0] < iend[0] or ibegin[0] == iend[0] and ibegin[1] <= iend[1]:
+            
+            mid = ((iend[0] + ibegin[0])*n + (iend[1] + ibegin[1]))//2
+            imid = (mid//n, mid%n)
+            print(ibegin, iend, imid, mid)
+            print(matrix[imid[0]][imid[1]])
+            if target == matrix[imid[0]][imid[1]]:
+                return True
+            elif target > matrix[imid[0]][imid[1]]:
+                if imid[1] == n - 1:
+                    ibegin = imid[0] + 1, 0
+                else:
+                    ibegin = imid[0], imid[1] + 1
+            else:
+                if imid[1] == 0:
+                    iend = imid[0] - 1, n - 1
+                else:
+                    iend = imid[0], imid[1] - 1
+        return False
 
 # 78 subset
 # 79% time 
@@ -625,6 +659,26 @@ class Solution(object):
                 rp = sr.pop().left
         return True
 
+# 102.Binary Tree Level Order Traversal
+# 70%
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        if root == None:
+            return []
+        queue = [root]
+        res = []
+        while queue:
+            x = len(queue)
+            for i in range(x):
+                if queue[i].left:
+                    queue.append(queue[i].left)
+                if queue[i].right:
+                    queue.append(queue[i].right)
+            layer = []
+            for i in range(x):
+                layer.append(queue.pop(0).val)
+            res.append(layer)
+        return res
+
 # 103. Binary Tree Zigzag Level Order Traversal
 # time 62%
     def zigzagLevelOrder(self, root: TreeNode) -> List[List[int]]:
@@ -830,6 +884,35 @@ class Solution(object):
                 curr = curr.left
             curr = stack.pop().right
         return res
+
+# 145. Binary Tree Postorder Traversal
+    def postorderTraversal(self, root: TreeNode) -> List[int]:
+        if root == None:
+            return []
+        res = []
+        stack = []
+        curr = root 
+        while stack or curr:
+            print(res)
+            
+            while curr:
+                if curr.right:
+                    stack.append(curr.right)
+                stack.append(curr)
+                curr = curr.left
+                
+            curr = stack.pop()
+            
+            if stack and curr.right and stack[-1] == curr.right:
+                stack.pop()
+                stack.append(curr)
+                curr = curr.right
+            else:
+                res.append(curr.val)
+                curr = None
+        return res
+        
+
 
 # 153. Find Minimum in Rotated Sorted Array
 # time 49% space 5%
