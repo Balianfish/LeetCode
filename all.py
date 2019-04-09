@@ -270,6 +270,61 @@ class Solution(object):
             mid = (low + high)//2
         return mid
 
+# 39. Combination Sum
+# 94%
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        if not candidates:
+            return []
+        candidates.sort(reverse = True)
+        if target < candidates[-1]:
+            return []
+        
+        res = []
+        
+        def helper(candidates, target, tmp, index):
+            if target == 0:
+                res.append(tmp)
+            elif target < candidates[-1]:
+                tmp.pop()
+            else:
+                for i in range(index, len(candidates)):
+                    helper(candidates, target - candidates[i], tmp + [candidates[i]], i)
+        helper(candidates, target, [], 0)
+        return res
+
+# 46. Permutation
+# 
+# recursive
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        self.dfs(nums, res, [])
+        return res
+    
+    def dfs(self, nums, res, path):
+        if not nums:
+            res.append(path)
+        else:
+            for i in range(len(nums)):
+                self.dfs(nums[:i] + nums[i + 1:], res, path + [nums[i]])
+
+#
+# backtracking
+    def permute(self, nums):
+        visited = [0]*len(nums)
+        res = []
+        
+        def dfs(path):
+            if len(path) == len(nums):
+                res.append(path)
+            else:
+                for i in range(len(nums)):
+                    if not visited[i]:
+                        visited[i] = 1
+                        dfs(path + [nums[i]])
+                        visited[i] = 0
+        dfs([])
+        return res
+
 # 53. Maximum Subarray
 # 99.85%
     def maxSubArray(self, nums: List[int]) -> int:
@@ -485,6 +540,31 @@ class Solution(object):
                 else:
                     low = low + 1
         return False
+
+# 90. Subsets II
+# 86%
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        if len(nums) <= 1:
+            return [[]] if len(nums) == 0 else [[], nums]
+        nums.sort()
+        subsets = [[], [nums[0]]]
+        prev = 1
+        last = 1
+        
+        for i in range(1, len(nums)):
+            prev = len(subsets)
+            if nums[i] == nums[i - 1]:
+                start = prev - last
+            else:
+                start = 0
+            tmp = []
+            for j in subsets[start:]:
+                new_list = j.copy()
+                new_list.append(nums[i])
+                tmp.append(new_list)
+            subsets.extend(tmp)
+            last = len(subsets) - prev
+        return subsets
 
 # 91. Decode Ways
 # 94%
@@ -709,6 +789,13 @@ class Solution(object):
             layer = thislayer
         return res
 
+# 104. Maximum Depth of Binary Tree
+    def maxDepth(self, root: TreeNode) -> int:
+        if root is None:
+            return 0
+        else:
+            return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
+
 # 105. Construct Binary Tree from Preorder and Inorder Traversal
     def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
         if len(preorder) == 0:
@@ -809,6 +896,18 @@ class Solution(object):
                 buy_time = i
         return max_profit 
 
+# 122. Best Time to Buy and Sell Stock II
+# 70%
+    def maxProfit(self, prices: List[int]) -> int:
+        if len(prices) <= 1:
+            return 0
+        profit = 0
+        
+        for i in range(1, len(prices)):
+            profit += max(0, prices[i] - prices[i - 1])
+        
+        return profit
+
 # 123. Best Time to Buy and Sell Stock III
 # 85%
     def maxProfit(self, prices: List[int]) -> int:
@@ -868,6 +967,12 @@ class Solution(object):
                 maxProfit2 =  i - minPrice2
                 
         return maxProfit2
+# 136. Single Number
+    def singleNumber(self, nums: List[int]) -> int:
+        ret = nums[0]
+        for i in nums[1:]:
+            ret ^= i
+        return ret
                 
 # 144. Binary Tree Preorder Traversal
 # 
@@ -1003,6 +1108,10 @@ class Solution(object):
             if not dfs(i):
                 return False
         return True
+
+# 217. Contains Duplicate
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        return len(set(nums)) != len(nums)
 
 # 238. Product of Array Except Self
     def productExceptSelf(self, nums):
