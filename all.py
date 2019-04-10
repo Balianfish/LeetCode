@@ -292,6 +292,54 @@ class Solution(object):
         helper(candidates, target, [], 0)
         return res
 
+# 40. Combination Sum II
+# 70%
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        if not candidates:
+            return []
+        candidates.sort(reverse = True)
+        if target < candidates[-1]:
+            return []
+        
+        res = []
+        
+        def helper(candidates, target, tmp, index):
+            if target == 0 and tmp not in res:
+                res.append(tmp)
+            elif target < candidates[-1]:
+                pass
+            else:
+                for i in range(index,  len(candidates)):
+                    helper(candidates, target - candidates[i], tmp + [candidates[i]], i + 1)
+        
+        helper(candidates, target, [], 0)
+        return res
+
+##
+    def combinationSum2(self, candidates, target):
+        candidates.sort(reverse = True)
+        res = []
+        cur = []
+        self.combinationSum2_helper(candidates, target, 0, cur, res)
+        return res
+
+    def combinationSum2_helper(self, candidates, target, idx, cur, res):
+        if target == 0:
+            res.append(cur[:])
+            return
+        for i in range(idx, len(candidates)):
+            if target < candidates[-1]:
+                break
+            if i > idx and candidates[i] == candidates[i - 1]:
+                continue
+            cur.append(candidates[i])
+            self.combinationSum2_helper(candidates, target - candidates[i], i + 1, cur, res)
+            cur.pop()
+
+
+
+
+
 # 46. Permutation
 # 
 # recursive
@@ -324,6 +372,33 @@ class Solution(object):
                         visited[i] = 0
         dfs([])
         return res
+
+# 47. Permutations II
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        if len(nums) <= 1:
+            return [[]] if len(nums) == 0 else [nums]
+
+        res = []
+        visited = [0]*len(nums)
+
+        def helper(tmp):
+            if len(tmp) == len(nums) and tmp not in res:
+                res.append(tmp.copy())
+            else:
+                prev = -1
+                for i in range(len(nums)):
+                    if prev >= 0 and nums[i] == nums[prev]:
+                        continue
+                    if not visited[i]:
+                        visited[i] = 1
+                        tmp.append(nums[i])
+                        helper(tmp)
+                        tmp.pop()
+                        visited[i] = 0
+                        prev = i
+        helper([])
+        return res
+
 
 # 53. Maximum Subarray
 # 99.85%
@@ -967,6 +1042,26 @@ class Solution(object):
                 maxProfit2 =  i - minPrice2
                 
         return maxProfit2
+
+# 131. Palindrome Partitioning
+    def partition(self, s: str) -> List[List[str]]:
+        if len(s) <= 1:
+            return [[]] if len(s) == 0 else [[s]]
+        res = []
+        def helper(s, tmp):
+            if len(s) == 0:
+                res.append(tmp)
+            else:
+                for i in range(0, len(s)):
+                    if self.isPalindrome(s[:i+1]):
+                        helper(s[i + 1:], tmp + [s[:i+1]])
+        helper(s, [])
+        return res
+        
+        
+    def isPalindrome(self, n):
+        return n == n[::-1]
+
 # 136. Single Number
     def singleNumber(self, nums: List[int]) -> int:
         ret = nums[0]
@@ -1108,6 +1203,24 @@ class Solution(object):
             if not dfs(i):
                 return False
         return True
+
+# 216. Combination Sum III
+# 80%
+    def combinationSum3(self, n, k):
+        nums = [9, 8, 7, 6, 5, 4, 3, 2, 1]
+        res = []
+
+        def helper(n, k, tmp, index):
+            if k == 0:
+                if n == 0:
+                    res.append(tmp)
+            else:
+                for i in range(index, 9):
+                    if k >= nums[i]:
+                        helper(n - 1, k - nums[i], tmp + [nums[i]], i)
+        helper(n, k, [], 0)
+        return res
+
 
 # 217. Contains Duplicate
     def containsDuplicate(self, nums: List[int]) -> bool:
