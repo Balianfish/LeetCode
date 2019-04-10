@@ -294,6 +294,46 @@ class Solution(object):
                     small[small_index[0]][small_index[1]][val] = 1
         return True
 
+# 37. Sudoku Solver
+# 82%
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        x = {i:0 for i in range(1, 10)}
+        checkRow = [x.copy() for i in range(9)]
+        checkColumn = [x.copy() for i in range(9)]
+        checkSquare = [[x.copy() for i in range(3)] for i in range(3)]
+        blankLoc = []
+        
+        # initialize
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] != '.':
+                    val = int(board[i][j])
+                    checkRow[i][val] = 1
+                    checkColumn[j][val] = 1
+                    checkSquare[i//3][j//3][val] = 1
+                else:
+                    blankLoc.append((i, j))
+                    
+                    
+        def backtrack(index):
+            if index == len(blankLoc):
+                return True
+            for a in blankLoc[index:]:
+                i, j = a                    
+                for val in range(1, 10):
+                    if checkRow[i][val] == 0 and checkColumn[j][val] == 0 and checkSquare[i//3][j//3][val] == 0:
+                        board[i][j] = str(val)
+                        checkRow[i][val] = checkColumn[j][val] = checkSquare[i//3][j//3][val] = 1
+                        if backtrack(index + 1):
+                            return True
+                        checkRow[i][val] = checkColumn[j][val] = checkSquare[i//3][j//3][val] = 0
+                return False
+        
+        backtrack(0)
+
 # 39. Combination Sum
 # 94%
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
