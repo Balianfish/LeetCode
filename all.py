@@ -229,6 +229,38 @@ class Solution(object):
                 break
         return ret
 
+# 22. Generate Parentheses
+# 58%
+    def generateParenthesis(self, n):
+        """
+        :type n: int
+        :rtype: List[str]
+        """
+        
+        if n <= 1:
+            return [] if n == 0 else["()"]
+        
+        res = []
+        
+        def helper(tmp, diff):
+            if len(tmp) == 2*n:
+                if diff == 0:
+                    res.append(tmp)
+            else:
+                if diff < n and diff < 2*n - len(tmp):
+                    tmp += '('
+                    diff += 1
+                    helper(tmp, diff)
+                    tmp = tmp[:-1]
+                    diff -= 1
+                tmp += ')'
+                diff -= 1
+                if diff >= 0:
+                    helper(tmp, diff)
+                
+        helper('(', 1)
+        return res
+
 # 26 Remove Duplicates from Sorted Array
     def removeDuplicates(self, nums):
         """
@@ -402,7 +434,26 @@ class Solution(object):
 
 
 
-
+# 41. First Missing Positive
+# 60%
+    def firstMissingPositive(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if len(nums) == 0 :
+            return 1
+        i = 0
+        n = len(nums)
+        while i < n:
+            if nums[i] > 0 and nums[i] < n and nums[nums[i] - 1] != nums[i]:
+                nums[nums[i] - 1], nums[i] = nums[i], nums[nums[i] - 1]
+            else:
+                i += 1
+        for i in range(len(nums)):
+            if nums[i] != i + 1:
+                return i + 1
+        return n + 1
 
 # 46. Permutation
 # 
@@ -645,6 +696,24 @@ class Solution(object):
                 grid[i][j] += min(grid[i - 1][j], grid[i][j - 1])
         return grid[m - 1][n - 1]
 
+
+# 66. Plus One
+# 
+    def plusOne(self, digits):
+        """
+        :type digits: List[int]
+        :rtype: List[int]
+        """
+        for i in range(len(digits) - 1, -1, -1):
+            if digits[i] != 9 and i >= 0:
+                digits[i] += 1
+                return digits
+            elif digits[i] == 9:
+                if i > 0:
+                    digits[i] = 0
+                else:
+                    digits[i] = 0
+                    return [1] + digits
 
 # 69. Sqrt(x)
 # 44%
@@ -1290,6 +1359,19 @@ class Solution(object):
             else:
                 return nums[low]
 
+# 171. Excel Sheet Column Number
+# 
+    def titleToNumber(self, s: str) -> int:
+        if len(s) == 0:
+            return None
+        letter_to_number = {chr(ord('A') + i - 1): i for i in range(1, 27)}
+        nb = 0
+        base = 1
+        for i in s[::-1]:
+            nb += letter_to_number[i]*base
+            base *= 26
+        return nb
+
 # 198. House Robber
 # 72%
     def rob(self, nums: List[int]) -> int:
@@ -1325,6 +1407,30 @@ class Solution(object):
             for i in range(layer_len):
                 thislayer.pop(0)
         return rightview
+
+# 202. Happy Number
+# 99.85%
+    def isHappy(self, n: int) -> bool:
+        _set = set([])
+        _set.add(n)
+        while n > 3:
+            n = self.digitSS(n)
+            if n in _set:
+                return False
+            else:
+                _set.add(n)
+        if n == 1:
+            return True
+        else:
+            return False
+        return n
+    
+    def digitSS(self, n):
+        res = 0
+        while(n >= 10):
+            res += (n%10) ** 2
+            n = n//10
+        return res + n*n   
 
 # 207 Course Schedule
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
