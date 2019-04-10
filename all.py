@@ -399,6 +399,88 @@ class Solution(object):
         helper([])
         return res
 
+# 51. N-Queens
+# 58%
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        if n <= 3:
+            return [["Q"]] if n == 1 else []
+        loc = [0]*n
+        res = []
+        
+        def printQueen(tmp):
+            ret = []
+            for i in range(n):
+                ret.append("."*tmp[i] + 'Q' + "."*(n - 1 - tmp[i]))
+            return ret
+        
+        
+        def validLoc(tmp, k):
+            valid = {i: 1 for i in range(n)}
+            for i, j in enumerate(tmp):
+                valid[j] = 0
+                if j + k - i < n:
+                    valid[j + k - i] = 0
+                if j - k + i >= 0:
+                    valid[j - k + i] = 0
+            return [i for i in range(n) if valid[i] == 1]
+                
+        
+        def helper(tmp, index):
+            if len(tmp) == n:
+                res.append(printQueen(tmp))
+            else:
+                for i in range(index, n):
+                    if len(tmp) < i:
+                        break
+                    thislayer = validLoc(tmp, i)
+                    if not thislayer:
+                        break
+                    for j in thislayer:
+                        tmp.append(j)
+                        helper(tmp, i + 1)
+                        tmp.pop()
+        
+        helper([], 0)
+        return res
+
+# 52. N-Queens II
+# 55%
+    def totalNQueens(self, n: int) -> int:
+        if n <= 3:
+            return 1 if n == 1 else 0 
+        loc = [0]*n
+        res = []
+                
+        def validLoc(tmp, k):
+            valid = set(range(n))
+            invalid = set([])
+            for i, j in enumerate(tmp):
+                invalid.add(j)
+                if j + k - i < n:
+                    invalid.add(j + k - i)
+                if j - k + i >= 0:
+                    invalid.add(j - k + i)
+            return valid - invalid
+                
+        
+        def helper(tmp, index):
+            if len(tmp) == n:
+                res.append(tmp)
+            else:
+                for i in range(index, n):
+                    if len(tmp) < i:
+                        break
+                    thislayer = validLoc(tmp, i)
+                    if not thislayer:
+                        break
+                    for j in thislayer:
+                        tmp.append(j)
+                        helper(tmp, i + 1)
+                        tmp.pop()
+        
+        helper([], 0)
+        return len(res)
+
 
 # 53. Maximum Subarray
 # 99.85%
