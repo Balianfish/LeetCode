@@ -270,6 +270,30 @@ class Solution(object):
             mid = (low + high)//2
         return mid
 
+# 36. Valid Sudoku
+# 
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        row = [{i: 0 for i in range(1, 10)} for i in range(9)]
+        column = [{i: 0 for i in range(1, 10)} for i in range(9)]
+        small = [[{i: 0 for i in range(1, 10)} for j in range(3)] for i in range(3)]
+        
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] != '.':
+                    val = int(board[i][j])
+                    small_index = i//3, j//3
+                    if row[i][val] == 1:
+                        return False
+                    if column[j][val] == 1:
+                        return False
+                    if small[small_index[0]][small_index[1]][val] == 1:
+                        return False
+                    
+                    row[i][val] = 1
+                    column[j][val] = 1
+                    small[small_index[0]][small_index[1]][val] = 1
+        return True
+
 # 39. Combination Sum
 # 94%
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
