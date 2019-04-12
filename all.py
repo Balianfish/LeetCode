@@ -229,6 +229,36 @@ class Solution(object):
                 break
         return ret
 
+# 21. Merge Two Sorted Lists
+# 88%
+    def mergeTwoLists(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """
+        if not (l1 and l2):
+            return l1 if l2 == None else l2
+        if l1.val < l2.val:
+            l_while = l = l1
+            l1 = l1.next
+        else:
+            l_while = l = l2
+            l2 = l2.next
+        while(l1 and l2):
+            if l1.val < l2.val:
+                l_while.next = l1
+                l1 = l1.next
+            else:
+                l_while.next = l2
+                l2 = l2.next
+            l_while = l_while.next
+        if l1 == None:
+            l_while.next = l2
+        else:
+            l_while.next = l1
+        return l
+
 # 22. Generate Parentheses
 # 58%
     def generateParenthesis(self, n):
