@@ -873,6 +873,41 @@ class Solution(object):
                     low = low + 1
         return False
 
+# 84. Largest Rectangle in Histogram
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        if len(heights) == 0:
+            return 0
+        n = len(heights)
+        maxArea = 0
+        left = [0] * n
+        right = [0] * n
+        
+        right[n - 1] = 1
+        for i in range(n - 2, -1, -1):
+            if heights[i] > heights[i + 1]:
+                right[i] = 1
+            else:
+                j = i + 1
+                while j < n and heights[j] >= heights[i]:
+                    j += right[j]
+                right[i] = j - i
+        
+        left[0] = 1
+        for i in range(1, n):
+            if heights[i] > heights[i - 1]:
+                left[i] = 1
+            else:
+                j = i - 1
+                while j >= 0 and heights[j] >= heights[i]:
+                    j -= left[j]
+                left[i] = i - j
+        print(left)
+        print(right)
+        maxArea = heights[0]
+        for i in range(n):
+            maxArea = max(heights[i] * (left[i] + right[i] - 1), maxArea)
+        return maxArea
+
 # 90. Subsets II
 # 86%
     def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
@@ -1325,7 +1360,18 @@ class Solution(object):
         for i in nums[1:]:
             ret ^= i
         return ret
-                
+
+#139. Word Break
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        dp = [False] * (len(s) + 1)
+        dp[0] = True
+        for i in range(1, len(s) + 1):
+            for k in range(i):
+                if dp[k] and s[k:i] in wordDict:
+                    dp[i] = True
+        return dp.pop()
+
+        
 # 144. Binary Tree Preorder Traversal
 # 
     def preorderTraversal(self, root: TreeNode) -> List[int]:
@@ -1369,6 +1415,39 @@ class Solution(object):
                 curr = None
         return res
         
+#152. Maximum Product Subarray
+# Non DP solution
+    def maxProduct(self, nums: List[int]) -> int:
+        # the subarray has no zero
+        # and even number of negs 
+        # this solution beats 99.92%, but not DP
+        if len(nums) <= 1:
+            return 0 if len(nums) == 0 else nums[0]
+        sumNeg = 0
+        firstNeg = -1
+        lastNeg = -1
+        for i in range(len(nums)):
+            if nums[i] == 0:
+                return max(0, self.maxProduct(nums[:i]), self.maxProduct(nums[i + 1:]))
+            if nums[i] < 0:
+                sumNeg += 1
+                if firstNeg == -1:
+                    firstNeg = i
+                lastNeg = i
+        if sumNeg % 2 == 0:
+            return self.getProd(nums)
+        else:
+            return max(self.getProd(nums[:firstNeg]), self.getProd(nums[firstNeg + 1:]), self.getProd(nums[:lastNeg]), self.getProd(nums[lastNeg + 1:]))
+
+# DP solution
+    def maxProduct(self, nums: List[int]) -> int:
+        max_now = min_now = max_all = nums[0]
+        for i in range(1, len(nums)):
+            tmp = max_now
+            max_now = max(min_now*nums[i], max_now*nums[i], nums[i])
+            min_now = min(min_now*nums[i], tmp*nums[i], nums[i])
+            max_all = max(max_all, max_now)
+        return max_all
 
 
 # 153. Find Minimum in Rotated Sorted Array
@@ -1413,6 +1492,15 @@ class Solution(object):
             nb += letter_to_number[i]*base
             base *= 26
         return nb
+
+# 172. Factorial Trailling Zeroes
+# 
+    def trailingZeroes(self, n: int) -> int:
+        sumZeros = 0
+        while(n >= 5):
+            sumZeros += n//5
+            n = n//5
+        return sumZeros
 
 # 198. House Robber
 # 72%
@@ -1497,6 +1585,30 @@ class Solution(object):
             if not dfs(i):
                 return False
         return True
+
+# 213. House Robber II
+    def rob1(self, nums):
+        if len(nums) <= 0:
+            return 0 if len(nums) == 0 else nums[0]
+        max_gain = [0]*(len(nums) + 1)
+        last = 0
+        for i in range(1, len(nums) + 1):
+            if last == 0:
+                max_gain[i] = max_gain[i - 1] + nums[i - 1]
+                last = 1
+            else:
+                max_gain[i] = max(max_gain[i - 1], max_gain[i - 2] + nums[i - 1])
+        return max_gain[-1]
+
+    def rob(self, nums):
+        n = len(nums)
+        if n <= 2:
+            if n == 0:
+                return 0
+            else:
+                return nums[0] if n == 1 else max(nums)
+        return max(self.rob1(nums[:n - 1]), self.rob1(nums[1:]))
+
 
 # 216. Combination Sum III
 # 80%
@@ -1711,6 +1823,19 @@ class Solution(object):
             res[15*i-1] = 'FizzBuzz'
         return res
 
+# 485. Max Consecutive Ones
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        x = 0
+        max_x = 0
+        for i in nums:
+            if i == 1:
+                x += 1
+                if x > max_x:
+                    max_x = x
+            else:
+                x = 0
+        return max_x
+
 # 513. Find Bottom Left Tree Value
 # time 80%
     def findBottomLeftValue(self, root):
@@ -1747,6 +1872,59 @@ class Solution(object):
             for i in range(layer_size):
                 layer.pop(0)
         return max_depth
+
+# 639. Decode Ways II
+    def numDecodings(self, s):
+        if len(s) == 0:
+            return 0
+        prevprev, prev, curr = 1, 0, 0
+
+        if s[0] == '0':
+            return 0
+        else:
+            if s[0] == '*':
+                curr = prev = 9
+            else:
+                curr = prev = 1
+
+        for i in range(1, len(s)):
+            if s[i] == '0':
+                if s[i - 1] == '*':
+                    curr = prevprev * 2
+                elif s[i - 1] in'12':
+                    curr = prevprev
+                else:
+                    return 0
+            elif s[i] == '*':
+                if s[i - 1] == '0':
+                    curr = prev * 9
+                elif s[i - 1] == '*':
+                    curr = prev * 9  + prevprev * 15
+                elif s[i - 1] == '1':
+                    curr = prev * 9 + prevprev * 9
+                elif s[i - 1] == '2':
+                    curr = prev * 9 + prevprev * 6
+                else:
+                    curr = prev * 9
+            else:
+                if s[i - 1] == '0':
+                    curr = prev
+                elif s[i - 1] == '*':
+                    curr = prev
+                    if s[i] in '123456':
+                        curr += prevprev * 2
+                    else:
+                        curr += prevprev
+                elif s[i - 1] == '1':
+                    curr = prev + prevprev
+                elif s[i - 1] == '2':
+                    if s[i] in '123456':
+                        curr = prev + prevprev
+                    else:
+                        curr = prev
+            prev, prevprev = curr, prev
+        return curr % (10**9 + 7)
+
 
 # 690. Employee Importance
 # time 74%
