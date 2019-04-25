@@ -908,6 +908,41 @@ class Solution(object):
             maxArea = max(heights[i] * (left[i] + right[i] - 1), maxArea)
         return maxArea
 
+#85. Maximal Rectangles 
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+
+        """
+        :type matrix: List[List[str]]
+        :rtype: int
+        """
+        if not matrix or not matrix[0]: return 0
+        M, N = len(matrix), len(matrix[0])
+        height = [0] * N
+        res = 0
+        for row in matrix:
+            for i in range(N):
+                if row[i] == '0':
+                    height[i] = 0
+                else:
+                    height[i] += 1
+            res = max(res, self.maxRectangleArea(height))
+        return res
+
+    def maxRectangleArea(self, height):
+        if not height: return 0
+        res = 0
+        stack = list()
+        height.append(0)
+        for i in range(len(height)):
+            cur = height[i]
+            while stack and cur < height[stack[-1]]:
+                w = height[stack.pop()]
+                h = i if not stack else i - stack[-1] - 1
+                res = max(res, w * h)
+            stack.append(i)
+        return res
+
+
 # 90. Subsets II
 # 86%
     def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
@@ -1502,6 +1537,49 @@ class Solution(object):
             n = n//5
         return sumZeros
 
+# 187. Repeated DNA Sequences
+    def findRepeatedDnaSequences(self, s: str) -> List[str]:
+        if len(s) <= 9:
+            return []
+        x = {}
+        for i in range(len(s) - 9):
+            if s[i : i + 10] in x:
+                x[s[i:i + 10]] += 1
+            else:
+                x[s[i:i + 10]] = 1
+        res = []
+        for i in x:
+            if x[i] > 1:
+                res.append(i)
+        return res
+
+
+#188.Best Time to Buy and Sell Stock IV
+    def maxProfit(self, k, prices):
+        n = len(prices)
+        # avoid MemoryError
+        if k >= (n>>1):
+            return self.buyAsMany(prices)
+        dp = [[0] * n for _ in range(k+1)]
+        for i in range(1, k+1):
+            # reduce O(knn) to O(kn)
+            tmp = -prices[0]
+            for j in range(1, n):
+                # sell or not sell
+                dp[i][j] = max(dp[i][j-1], prices[j]+tmp)
+                tmp = max(tmp, dp[i-1][j-1]-prices[j])
+        return dp[k][n-1]
+
+    def buyAsMany(self, prices):
+        if len(prices) < 2:
+            return 0
+        profit = 0
+        for i in range(1, len(prices)):
+            # sell only if price increased
+            profit += max(0, prices[i]-prices[i-1])
+        return profit
+
+
 # 198. House Robber
 # 72%
     def rob(self, nums: List[int]) -> int:
@@ -1585,6 +1663,33 @@ class Solution(object):
             if not dfs(i):
                 return False
         return True
+
+# 210. Course Schedule II
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        graph = collections.defaultdict(list)
+        for u, v in prerequisites:
+            graph[u].append(v)
+        visit = [0] * numCourses
+        path = []
+
+        def dfs(curr):
+            if visit[curr] == 1:
+                return False
+            if visit[curr] == 2:
+                return True
+            visit[curr] = 1
+            for j in graph[curr]:
+                if not dfs(j):
+                    return False
+            visit[curr] = 2
+            path.append(curr)
+            return True
+
+        for i in range(numCourses):
+            if not dfs(i):
+                return []
+        return path
+
 
 # 213. House Robber II
     def rob1(self, nums):
@@ -1706,6 +1811,25 @@ class Solution(object):
         while n%3 == 0:
             n = n/3
         return n == 1
+
+# 329. Longest Increasing Path in a Matrix
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+        if not matrix or not matrix[0]:
+            return 0
+        m, n = len(matrix), len(matrix[0])
+        dp = [[0]*n for i in range(m)]
+
+        def dfs(i, j):
+            if not dp[i][j]:
+                val = matrix[i][j]
+                dp[i][j] = 1 + max(
+                dfs(i - 1, j) if i and val > matrix[i - 1][j] else 0,
+                dfs(i + 1, j) if i < m - 1 and val > matrix[i + 1][j] else 0,
+                dfs(i, j - 1) if j and val > matrix[i][j - 1] else 0,
+                dfs(i, j + 1) if j < n - 1 and val > matrix[i][j + 1] else 0)
+            return dp[i][j]
+        return max(dfs(x, y) for x in range(m) for y in range(n))
+
 
 # 344. Reverse String
 # 58%
@@ -1958,6 +2082,27 @@ class Solution(object):
                 low = mid + 1
             mid = low + (high - low)//2           
         return letters[high] if letters[high] > target else letters[0]
+
+# 802. Find Eventual Safe States
+    def eventualSafeNodes(self, graph: List[List[int]]) -> List[int]:
+        visit = [0] * len(graph)
+        res = []
+
+        def dfs(start):
+            if visit[start] != 0:
+                return visit[start] == 1
+            visit[start] = 2
+            for i in graph[start]:
+                if not dfs(i):
+                    return False
+            visit[start] = 1
+            return True
+
+        for i in range(len(graph)):
+            if dfs(i):
+                res.append(i)
+        return res
+
 
 # 876. Middle of the Linked List
     def middleNode(self, head: ListNode) -> ListNode:
