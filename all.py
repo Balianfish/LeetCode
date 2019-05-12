@@ -1840,6 +1840,16 @@ class Solution(object):
         for i in range(len(s)//2):
             s[i], s[-1-i] = s[-1- i], s[i]
 
+# 345. Reverse Vowels of a String
+# 98%
+    def reverseVowels(self, s: str) -> str:
+        vowel = [i for i in s if i in 'aoeiuAOEIU'][::-1]
+        vowel_order = [i for i in range(len(s)) if s[i] in 'aoeiuAOEIU']
+        s = list(s)
+        for i, order in enumerate(vowel_order):
+            s[order] = vowel[i]
+        return ''.join(s)
+
 # 378 Kth Smallest Element in a Sorted Matrix
     def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
         n = len(matrix)
