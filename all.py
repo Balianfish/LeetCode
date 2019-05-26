@@ -183,6 +183,29 @@ class Solution(object):
             return True
         else:
             return False
+
+# 11. Container With Most Water
+    def maxArea(self, height: List[int]) -> int:
+        if len(height) <= 1:
+            return 0
+        start, end = 0, len(height) - 1
+            
+        curr = self.area(start, end, height)
+        if height[start] > height[end]:
+            end -= 1
+        else:
+            start += 1
+        while start < end:
+            curr = max(curr, self.area(start, end, height))
+            if height[start] > height[end]:
+                end -= 1
+            else:
+                start += 1
+        return curr
+    
+    def area(self, start, end, height):
+        return (end - start) * min(height[start], height[end])
+
 # 12 Integer to Romain
     def intToRoman(self, num):
         """
