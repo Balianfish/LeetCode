@@ -2103,6 +2103,41 @@ class Solution(object):
             layer = thislayer
         return total_importance
 
+# 724. Find Pivot Index
+    def pivotIndex(self, nums: List[int]) -> int:
+        left, right = 0, sum(nums)
+        for i in range(len(nums)):
+            if i == 0:
+                left += 0
+            else:
+                left += nums[i - 1]
+            right -= nums[i]
+            if left == right:
+                return i
+                break
+        return -1
+        
+        
+        if len(nums) <= 2:
+            if len(nums) == 1:
+                return 0
+            else:
+                return -1
+        left = [0] * len(nums)
+        right = [0] * len(nums)
+        
+        left_sum = 0
+        right_sum = 0
+        for i in range(0, len(nums) - 1):
+            left_sum += nums[i]
+            left[i + 1] = left_sum
+            right_sum += nums[len(nums) - 1 - i]
+            right[len(nums) - 2 - i] = right_sum
+        for i in range(len(nums)):
+            if left[i] == right[i]:
+                return i
+        return -1
+
 # 744. Find Smallest Letter Greater Than Target
     def nextGreatestLetter(self, letters: List[str], target: str) -> str:
         low = 0
