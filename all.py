@@ -314,6 +314,29 @@ class Solution(object):
         helper('(', 1)
         return res
 
+# 24. Swap Nodes in Pairs
+    def swapPairs(self, me: ListNode) -> ListNode:
+        if me is None:
+            return me
+        son = me.next
+        if son is None:
+            return me
+        else:
+            grandson = son.next
+            # swap the first two
+            son.next, me.next = me, grandson
+            me, son = son, me
+        curr = son
+        while(curr.next and curr.next.next):
+            newme = curr.next
+            son = curr.next.next
+            grandson = curr.next.next.next
+            
+            son.next, newme.next = newme, grandson
+            curr.next = son
+            curr = newme
+        return me
+
 # 26 Remove Duplicates from Sorted Array
     def removeDuplicates(self, nums):
         """
