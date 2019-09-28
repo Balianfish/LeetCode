@@ -1415,6 +1415,35 @@ class Solution(object):
                 maxProfit2 =  i - minPrice2
                 
         return maxProfit2
+# 128. Longest Consecutive Sequence
+#
+    def longestConsecutive(self, test):
+        import heapq
+        
+        nums = test.copy()
+        if len(nums) <= 1:
+            return len(nums)
+        
+        hashNums = {a: i for i, a in enumerate(nums)}
+        checked = [False] * len(nums)        
+        maxLength = 1
+        
+        heapq.heapify(nums)
+        while(len(nums)):
+            start = heapq.heappop(nums)
+            if not checked[hashNums[start]]:
+                currLength = 1
+                currValue = start
+                while(True):
+                    if currValue + 1 in hashNums:
+                        currLength += 1
+                        checked[hashNums[currValue]] = True
+                        currValue += 1
+                    else:
+                        break
+                if maxLength < currLength:
+                    maxLength = currLength
+        return maxLength   
 
 # 131. Palindrome Partitioning
     def partition(self, s: str) -> List[List[str]]:
@@ -1560,6 +1589,49 @@ class Solution(object):
                 mid = low + (high - low)//2
             else:
                 return nums[low]
+# 164. Maximum Gap
+ 128. Longest Consecutive Sequence
+#
+    def longestConsecutive(self, test):
+        import heapq
+        
+        nums = test.copy()
+        if len(nums) <= 1:
+            return len(nums)
+        
+        hashNums = {a: i for i, a in enumerate(nums)}
+        checked = [False] * len(nums)        
+        maxLength = 1
+        
+        heapq.heapify(nums)
+        while(len(nums)):
+            start = heapq.heappop(nums)
+            if not checked[hashNums[start]]:
+                currLength = 1
+                currValue = start
+                while(True):
+                    if currValue + 1 in hashNums:
+                        currLength += 1
+                        checked[hashNums[currValue]] = True
+                        currValue += 1
+                    else:
+                        break
+                if maxLength < currLength:
+                    maxLength = currLength
+        return maxLength   
+# 169. Majority Element
+    def majorityElement(self, nums: List[int]) -> int:
+        if len(nums) <= 1:
+            return nums[0] if len(nums) == 1 else None
+        count_dict = {}
+        for i in nums:
+            if i in count_dict:
+                count_dict[i] += 1
+            else:
+                count_dict[i] = 1
+        for i in count_dict:
+            if count_dict[i] > len(nums)/2:
+                return i
 
 # 171. Excel Sheet Column Number
 # 
